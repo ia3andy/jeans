@@ -1,16 +1,20 @@
 package io.mvnpm;
 
-public class MyElem extends QuteElement {
+
+import static io.mvnpm.Html.html;
+
+public class MyElem extends QompElement {
 
 
 
     @Override
     public String render() {
-        return """
+        // language=html
+        return html("""
                 
                 
-                W00000T
+                <b>W00000T</b>
                 
-                """;
+                """);
     }
 }

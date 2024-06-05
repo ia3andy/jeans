@@ -2,11 +2,12 @@ package io.mvnpm;
 
 import static io.mvnpm.Html.html;
 
-public class BaseElem extends QuteElement {
+public class BaseElem extends QompElement {
 
     @Override
     public String render() {
         String title = getProperty("title");
+        // language=html
         return """
                 <!DOCTYPE html>
                 <html>
@@ -29,6 +30,6 @@ public class BaseElem extends QuteElement {
                 </body>
                 </html>
                                 
-                """.formatted(title, title, html(content));
+                """.formatted(title, title, html(slot()));
     }
 }

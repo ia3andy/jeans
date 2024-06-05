@@ -7,17 +7,22 @@ import java.util.regex.Pattern;
 public class Html {
     private static final Pattern TAG_PATTERN = Pattern.compile("<([^/>\\s]+)([^>]*)(>(.*?)(</\\1>)|/>)", Pattern.DOTALL);
 
-    public static String html(QuteElementRegistry registry, String content) {
+
+    public static String html(String content) {
+        return html(QompElementRegistry.instance(), content);
+    }
+
+
+    public static String html(QompElementRegistry registry, String content) {
         final List<Tag> tags = extractFirstLevelTags(content);
         StringBuilder builder = new StringBuilder();
         if(tags.isEmpty()) {
             return content;
         }
         for (Tag tag : tags) {
-            final QuteElement element = registry.getOrFallback(tag.name);
-            element.setRegistry(registry);
+            final QompElement element = registry.getOrFallback(tag.name);
             element.properties.putAll(tag.attributes);
-            element.content = tag.content;
+            element.setSlot(tag.inner);
             builder.append(element.render());
         }
         return builder.toString();
@@ -47,6 +52,6 @@ public class Html {
         return attributeMap;
     }
 
-    static record Tag(String name, Map<String, String> attributes, String content) {}
+    static record Tag(String name, Map<String, String> attributes, String inner) {}
 
 }

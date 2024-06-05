@@ -1,37 +1,45 @@
 package io.mvnpm;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static io.mvnpm.Html.html;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HtmlTest {
 
+    @BeforeEach
+    void setUp() {
+        final QompElementRegistry registry = QompElementRegistry.instance();
+        registry.define("base-elem", BaseElem::new);
+        registry.define("my-elem", MyElem::new);
+    }
 
     @Test
     void testTags() {
-        final QuteElementRegistry registry = new QuteElementRegistry();
+
+        // language=html
         final String content = """
                     <div>
-                        <h1> Hello World</h1>
+                        <h1>Hello World</h1>
                     </div>        
                 """;
-        assertThat(Html.html(registry, content)).isEqualToIgnoringWhitespace(content);
+        assertThat(html(content)).isEqualToIgnoringWhitespace(content);
     }
 
 
     @Test
     void testMyElem() {
-        final QuteElementRegistry registry = new QuteElementRegistry();
-        registry.define("my-elem", new MyElem());
+        // language=html
         final String content = """
                     <div class="something">
                         <my-elem />
                     </div>        
                 """;
-        assertThat(Html.html(registry, content)).isEqualToIgnoringWhitespace(
+        assertThat(html(content)).isEqualToIgnoringWhitespace(
                 """
                     <div class="something">
-                        W00000T
+                        <b>W00000T</b>
                     </div>        
                 """
         );
@@ -39,9 +47,7 @@ class HtmlTest {
 
     @Test
     void testComposition() {
-        final QuteElementRegistry registry = new QuteElementRegistry();
-        registry.define("base-elem", new BaseElem());
-        registry.define("my-elem", new MyElem());
+        // language=html
         final String content = """
                     <base-elem title="Awesome App">
                         <div class="something">
@@ -49,7 +55,7 @@ class HtmlTest {
                         </div> 
                     </base-elem>       
                 """;
-        assertThat(Html.html(registry, content)).isEqualToIgnoringWhitespace(
+        assertThat(html(content)).isEqualToIgnoringWhitespace(
                 """
                     <!DOCTYPE html>
                 <html>
@@ -68,7 +74,7 @@ class HtmlTest {
                   </nav>
                   <div class="container mt-5">
                     <div class="something">
-                        W00000T
+                        <b>W00000T</b>
                     </div> 
                   </div>
                 </body>
