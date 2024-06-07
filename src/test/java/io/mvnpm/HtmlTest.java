@@ -3,10 +3,7 @@ package io.mvnpm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static io.mvnpm.Html.html;
+import static io.mvnpm.Html.HTML;
 import static io.mvnpm.Html.typed;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,27 +22,38 @@ class HtmlTest {
     void testTagElement() {
 
         // language=html
-        final String content = """
+        final Html content = HTML."""
                     <div>
                         <h1>Hello World</h1>
                     </div>        
                 """;
-        assertThat(html(content).toString()).isEqualToIgnoringWhitespace(content);
+        assertThat(content.toString()).isEqualToIgnoringWhitespace("""
+                    <div>
+                        <h1>Hello World</h1>
+                    </div>        
+                """);
     }
 
     @Test
     void testPerson() {
         final PersonElement.Person person = new PersonElement.Person("Andy", "Damevin");
         // language=html
-        final String content = """
+        final Html content = HTML."""
                     <div>
-                        <person value="%s"><h3>Some more info</h3></person>
+                        <person value="\{typed(person)}"><h3>Some more info</h3></person>
                         <br/>
                     </div>        
-                """.formatted(typed(person));
-        assertThat(html(content).toString()).isEqualToIgnoringWhitespace(
+                """;
+        assertThat(content.toString()).isEqualToIgnoringWhitespace(
                 """
-                    <div><div class="person"><span><span>Damevin</span><h3>Some more info</h3></span></div><br/></div>    
+                    <div>   <div class="person">
+                        <span class='first-name'>Andy</span>
+                        <span class='last-name'>Damevin</span>
+                        <span class="details">
+                            <h3>Some more info</h3>
+                        </span>
+                   </div>
+                <br/></div>  
                 """
         );
     }
@@ -53,12 +61,12 @@ class HtmlTest {
     @Test
     void testRaw() {
         // language=html
-        final String content = """
+        final Html content = HTML."""
                     <div class="something">
                         <raw />
                     </div>        
                 """;
-        assertThat(html(content).toString()).isEqualToIgnoringWhitespace(
+        assertThat(content.toString()).isEqualToIgnoringWhitespace(
                 """
                     <div class="something">
                         <b>W00000T</b>
@@ -70,14 +78,14 @@ class HtmlTest {
     @Test
     void testComposition() {
         // language=html
-        final String content = """
+        final Html content = HTML."""
                     <base title="Awesome App">
                         <div class="something">
                             <raw />
                         </div> 
                     </base>       
                 """;
-        assertThat(html(content).toString()).isEqualToIgnoringWhitespace(
+        assertThat(content.toString()).isEqualToIgnoringWhitespace(
                 """
                     <!DOCTYPE html>
                                <html>

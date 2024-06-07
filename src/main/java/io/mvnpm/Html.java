@@ -8,6 +8,12 @@ import java.util.stream.Collectors;
 
 public final class Html {
 
+    public static final StringTemplate.Processor<Html, RuntimeException> HTML = StringTemplate.Processor.of(
+            (StringTemplate st) -> HTML(st.interpolate()));
+
+    public static final StringTemplate.Processor<Html, RuntimeException> RAW = StringTemplate.Processor.of(
+            (StringTemplate st) -> TEXT(st.interpolate()));
+
     private final String content;
     private final Html[] tags;
 
@@ -56,7 +62,7 @@ public final class Html {
      * @param content raw html content
      * @return
      */
-    public static Html raw(String content) {
+    public static Html TEXT(String content) {
         return new Html(content);
     }
 
@@ -66,7 +72,7 @@ public final class Html {
      * @param tags an array of Html tags
      * @return a new Html for the list
      */
-    public static Html html(Html[] tags) {
+    public static Html HTML(Html[] tags) {
         return new Html(tags);
     }
 
@@ -76,7 +82,7 @@ public final class Html {
      * @param tags a list of Html tags
      * @return a new Html for the list
      */
-    public static Html html(List<Html> tags) {
+    public static Html HTML(List<Html> tags) {
         return new Html(tags.toArray(new Html[0]));
     }
 
@@ -85,11 +91,11 @@ public final class Html {
      * @param content the content to be processed
      * @return the processed Html
      */
-    public static Html html(String content) {
+    public static Html HTML(String content) {
         return parse(JeansElementRegistry.instance(), content);
     }
 
-    public static Html html(JeansElementRegistry registry, String content) {
+    public static Html HTML(JeansElementRegistry registry, String content) {
         return parse(registry, content);
     }
 
@@ -97,7 +103,7 @@ public final class Html {
      * To be used to pass a typed attribute to another element
      *
      * FIXME: This option is fragile and needs to be replaced someway
-     *
+     *do you
      * @param attribute the attribute to pass
      * @return a placeholder for the value
      * @param <T>
@@ -110,7 +116,7 @@ public final class Html {
         final List<ParsedTag> parsedTags = extractFirstLevelTags(content);
         List<Html> tags = new ArrayList<>(parsedTags.size());
         if (parsedTags.isEmpty()) {
-            return Html.raw(content);
+            return Html.TEXT(content);
         }
         for (ParsedTag tag : parsedTags) {
             final Element element = registry.getOrFallback(tag.name);
@@ -138,7 +144,7 @@ public final class Html {
             element.setRawElement(tag.rawTag);
             tags.add(element.render());
         }
-        return Html.html(tags);
+        return Html.HTML(tags);
     }
 
 

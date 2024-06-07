@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.mvnpm.Html.html;
-import static io.mvnpm.Html.raw;
+import static io.mvnpm.Html.HTML;
+import static io.mvnpm.Html.TEXT;
 
 public class Element {
 
@@ -67,14 +67,14 @@ public class Element {
         @Override
         public Html render() {
             if (slot() == null) {
-                return raw(rawElement());
+                return TEXT(rawElement());
             }
             StringBuilder builder = new StringBuilder("<" + name);
             if (!properties.isEmpty()) {
                 builder.append(" ");
                 builder.append(properties.entrySet().stream().map(e -> e.getKey() + "=\"" + e.getValue() + "\"").collect(Collectors.joining(" ")));
             }
-            return raw(builder.append(">").append(html(slot())).append( "</").append( name).append(">").toString());
+            return TEXT(builder.append(">").append(HTML(slot())).append( "</").append( name).append(">").toString());
         }
     }
 

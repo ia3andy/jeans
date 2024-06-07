@@ -1,7 +1,6 @@
 package io.mvnpm;
 
-import static io.mvnpm.Html.html;
-import static io.mvnpm.Html.raw;
+import static io.mvnpm.Html.*;
 
 public class BaseElement extends Element {
 
@@ -10,12 +9,12 @@ public class BaseElement extends Element {
     @Override
     public Html render() {
         // language=html
-        return raw(STR."""
+        return RAW."""
                 <!DOCTYPE html>
                 <html>
                 <head>
                 <title>\{title}</title>
-                \{html("<bundle />")}
+                \{HTML("<bundle />")}
                 </head>
                 <body>
                   <nav class="navbar sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
@@ -27,11 +26,11 @@ public class BaseElement extends Element {
                     </div>
                   </nav>
                   <div class="container mt-5">
-                    \{html(slot())}
+                    \{HTML(slot())}
                   </div>
                 </body>
                 </html>
 
-                """);
+                """;
     }
 }

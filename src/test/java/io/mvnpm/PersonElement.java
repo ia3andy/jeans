@@ -1,7 +1,7 @@
 package io.mvnpm;
 
 
-import static io.mvnpm.Html.html;
+import static io.mvnpm.Html.*;
 
 public class PersonElement extends Element {
 
@@ -12,15 +12,15 @@ public class PersonElement extends Element {
     public Html render() {
 
         // language=html
-        return html("""
+        return RAW."""
            <div class="person">
-                <span class='first-name'>%s</span>
-                <span class='last-name'>%s</span>
+                <span class='first-name'>\{value.firstName()}</span>
+                <span class='last-name'>\{value.lastName}</span>
                 <span class="details">
-                    %s
+                    \{HTML(slot())}
                 </span>
            </div>
-        """.formatted(value.firstName(), value.lastName, html(slot())));
+        """;
     }
 
     public record Person(String firstName, String lastName){}
