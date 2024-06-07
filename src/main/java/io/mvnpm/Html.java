@@ -50,22 +50,54 @@ public final class Html {
         return Arrays.stream(tags).map(Html::toString).collect(Collectors.joining());
     }
 
+    /**
+     * Content will be passed as is, it won't be parsed to resolve elements
+     *
+     * @param content raw html content
+     * @return
+     */
     public static Html raw(String content) {
         return new Html(content);
     }
 
+    /**
+     * Array of Html tags will be concatenated together
+     *
+     * @param tags an array of Html tags
+     * @return a new Html for the list
+     */
     public static Html html(Html[] tags) {
         return new Html(tags);
     }
 
+    /**
+     * List of Html tags will be concatenated together
+     *
+     * @param tags a list of Html tags
+     * @return a new Html for the list
+     */
     public static Html html(List<Html> tags) {
         return new Html(tags.toArray(new Html[0]));
     }
 
+    /**
+     * To be used to pass a typed attribute to another element
+     *
+     * FIXME: This option is fragile and needs to be replaced someway
+     *
+     * @param attribute the attribute to pass
+     * @return a placeholder for the value
+     * @param <T>
+     */
     public static <T> String typed(T attribute) {
         return JeansAttributesRegistry.instance().register(attribute);
     }
 
+    /**
+     * The content will be processed and elements will be resolved
+     * @param content the content to be processed
+     * @return the processed Html
+     */
     public static Html html(String content) {
         return parse(JeansElementRegistry.instance(), content);
     }

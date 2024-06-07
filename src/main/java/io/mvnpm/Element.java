@@ -18,15 +18,24 @@ public class Element {
         properties.put(name, defaultValue);
     }
 
-
+    /**
+     * Should render this element content
+     */
     public Html render() {
         return Html.empty();
     }
 
+    /**
+     * Get String properties by name.
+     * Properties can also be declared as fields
+     */
     public String getProperty(String name) {
         return properties.get(name);
     }
 
+    /**
+     * @return the inner content of this element
+     */
     public String slot() {
         return slot;
     }
@@ -45,6 +54,9 @@ public class Element {
         return this;
     }
 
+    /**
+     * Element used for tags (<div>, <em>, ...)
+     */
     static class TagElement extends Element {
         private final String name;
 
