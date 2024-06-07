@@ -10,28 +10,28 @@ public class BaseElement extends Element {
     @Override
     public Html render() {
         // language=html
-        return raw("""
+        return raw(STR."""
                 <!DOCTYPE html>
                 <html>
                 <head>
-                <title>%s</title>
-                %s
+                <title>\{title}</title>
+                \{html("<bundle />")}
                 </head>
                 <body>
                   <nav class="navbar sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
                     <div class="container-fluid">
                       <a class="navbar-brand" href="/">
                         <img src="/static/assets/images/logo.svg" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-                        %s
+                        \{title}
                       </a>
                     </div>
                   </nav>
                   <div class="container mt-5">
-                    %s
+                    \{html(slot())}
                   </div>
                 </body>
                 </html>
-                                
-                """.formatted(title, html("<bundle />"), title, html(slot())));
+
+                """);
     }
 }

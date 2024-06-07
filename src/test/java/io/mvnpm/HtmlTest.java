@@ -73,7 +73,7 @@ class HtmlTest {
         final String content = """
                     <base title="Awesome App">
                         <div class="something">
-                            <my-elem />
+                            <raw />
                         </div> 
                     </base>       
                 """;
@@ -95,7 +95,7 @@ class HtmlTest {
                                    </div>
                                  </nav>
                                  <div class="container mt-5">
-                                   <div class="something"><my-elem /></div>
+                                   <div class="something"><b>W00000T</b></div>
                                  </div>
                                </body>
                                </html>

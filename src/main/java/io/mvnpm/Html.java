@@ -81,19 +81,6 @@ public final class Html {
     }
 
     /**
-     * To be used to pass a typed attribute to another element
-     *
-     * FIXME: This option is fragile and needs to be replaced someway
-     *
-     * @param attribute the attribute to pass
-     * @return a placeholder for the value
-     * @param <T>
-     */
-    public static <T> String typed(T attribute) {
-        return JeansAttributesRegistry.instance().register(attribute);
-    }
-
-    /**
      * The content will be processed and elements will be resolved
      * @param content the content to be processed
      * @return the processed Html
@@ -104,6 +91,19 @@ public final class Html {
 
     public static Html html(JeansElementRegistry registry, String content) {
         return parse(registry, content);
+    }
+
+    /**
+     * To be used to pass a typed attribute to another element
+     *
+     * FIXME: This option is fragile and needs to be replaced someway
+     *
+     * @param attribute the attribute to pass
+     * @return a placeholder for the value
+     * @param <T>
+     */
+    public static <T> String typed(T attribute) {
+        return JeansAttributesRegistry.instance().register(attribute);
     }
 
     private static Html parse(JeansElementRegistry registry, String content) {
