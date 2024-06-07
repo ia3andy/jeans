@@ -1,19 +1,21 @@
 package io.mvnpm;
 
 import static io.mvnpm.Html.html;
+import static io.mvnpm.Html.raw;
 
-public class BaseElem extends QompElement {
+public class BaseElement extends Element {
+
+    public String title;
 
     @Override
-    public String render() {
-        String title = getProperty("title");
+    public Html render() {
         // language=html
-        return """
+        return raw("""
                 <!DOCTYPE html>
                 <html>
                 <head>
                 <title>%s</title>
-                {#bundle /}
+                %s
                 </head>
                 <body>
                   <nav class="navbar sticky-top bg-dark border-bottom border-body" data-bs-theme="dark">
@@ -30,6 +32,6 @@ public class BaseElem extends QompElement {
                 </body>
                 </html>
                                 
-                """.formatted(title, title, html(slot()));
+                """.formatted(title, html("<bundle />"), title, html(slot())));
     }
 }

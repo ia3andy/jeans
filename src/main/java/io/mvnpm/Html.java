@@ -1,44 +1,129 @@
 package io.mvnpm;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class Html {
-    private static final Pattern TAG_PATTERN = Pattern.compile("<([^/>\\s]+)([^>]*)(>(.*?)(</\\1>)|/>)", Pattern.DOTALL);
+public final class Html {
+
+    private final String content;
+    private final Html[] tags;
+
+    private static final Html EMPTY = new Html();
+
+    private static final Pattern TAG_PATTERN = Pattern.compile("<([^/>\\s]+)([^>]*)(>(.*)(</\\1>)|/>)", Pattern.DOTALL);
 
 
-    public static String html(String content) {
-        return html(QompElementRegistry.instance(), content);
+    private Html() {
+        this.content = null;
+        this.tags = null;
     }
 
+    private Html(String content) {
+       this.content = content;
+       this.tags =  null;
+    }
 
-    public static String html(QompElementRegistry registry, String content) {
-        final List<Tag> tags = extractFirstLevelTags(content);
-        StringBuilder builder = new StringBuilder();
-        if(tags.isEmpty()) {
+    private Html(Html[] tags) {
+        this.tags = tags;
+        this.content = null;
+    }
+
+    public static Html empty() {
+        return EMPTY;
+    }
+
+    public boolean isEmpty() {
+        return content == null && tags == null;
+    }
+
+    @Override
+    public String toString() {
+        if(content != null) {
             return content;
         }
-        for (Tag tag : tags) {
-            final QompElement element = registry.getOrFallback(tag.name);
-            element.properties.putAll(tag.attributes);
-            element.setSlot(tag.inner);
-            builder.append(element.render());
+        if(tags == null) {
+            return "";
         }
-        return builder.toString();
+        return Arrays.stream(tags).map(Html::toString).collect(Collectors.joining());
+    }
+
+    public static Html raw(String content) {
+        return new Html(content);
+    }
+
+    public static Html html(Html[] tags) {
+        return new Html(tags);
+    }
+
+    public static Html html(List<Html> tags) {
+        return new Html(tags.toArray(new Html[0]));
+    }
+
+    public static <T> String typed(T attribute) {
+        return JeansAttributesRegistry.instance().register(attribute);
+    }
+
+    public static Html html(String content) {
+        return parse(JeansElementRegistry.instance(), content);
+    }
+
+    public static Html html(JeansElementRegistry registry, String content) {
+        return parse(registry, content);
+    }
+
+    private static Html parse(JeansElementRegistry registry, String content) {
+        final List<ParsedTag> parsedTags = extractFirstLevelTags(content);
+        List<Html> tags = new ArrayList<>(parsedTags.size());
+        if (parsedTags.isEmpty()) {
+            return Html.raw(content);
+        }
+        for (ParsedTag tag : parsedTags) {
+            final Element element = registry.getOrFallback(tag.name);
+            element.properties.putAll(tag.attributes);
+            for (Field field : element.getClass().getFields()) {
+                if (tag.attributes.containsKey(field.getName())) {
+                    try {
+                        final String value = tag.attributes.get(field.getName());
+                        if (String.class.isAssignableFrom(field.getType())) {
+                            field.set(element, value);
+                        } else {
+                            final Object read = JeansAttributesRegistry.instance().read(value);
+                            if (field.getType().isAssignableFrom(read.getClass())) {
+                                field.set(element, read);
+                            } else {
+                                throw new IllegalStateException("Invalid type for attribute: <" + tag.name + " " + field.getName() + "=\""+field.getType().getName()+"\">, Found: " + read.getClass().getName());
+                            }
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            element.setSlot(tag.inner);
+            element.setRawElement(tag.rawTag);
+            tags.add(element.render());
+        }
+        return Html.html(tags);
     }
 
 
-    public static List<Tag> extractFirstLevelTags(String content) {
+    public static List<ParsedTag> extractFirstLevelTags(String content) {
         Matcher matcher = TAG_PATTERN.matcher(content);
-        List<Tag> tags = new LinkedList<>();
+        List<ParsedTag> tags = new LinkedList<>();
         while (matcher.find()) {
+            String rawTag = matcher.group(0);
             String tagName = matcher.group(1);
             String attributes = matcher.group(2);
             String tagContent = matcher.group(4);
+            if (tagContent == null || tagContent.isEmpty()) {
+                tagContent = null;
+            }
             Map<String, String> attributeMap = parseAttributes(attributes);
 
-            tags.add(new Tag(tagName, attributeMap, tagContent));
+            tags.add(new ParsedTag(rawTag, tagName, attributeMap, tagContent));
         }
         return tags;
     }
@@ -52,6 +137,6 @@ public class Html {
         return attributeMap;
     }
 
-    static record Tag(String name, Map<String, String> attributes, String inner) {}
+    static record ParsedTag(String rawTag, String name, Map<String, String> attributes, String inner) {}
 
 }

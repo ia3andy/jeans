@@ -1,20 +1,22 @@
 package io.mvnpm;
 
 
-import static io.mvnpm.Html.html;
+import static io.mvnpm.Html.raw;
 
-public class MyElem extends QompElement {
+public class RawElement extends Element {
 
 
 
     @Override
-    public String render() {
+    public Html render() {
         // language=html
-        return html("""
+        return raw("""
                 
                 
                 <b>W00000T</b>
                 
                 """);
     }
+
+
 }
